@@ -48,7 +48,9 @@ const AllUsers = ({ history }) => {
               users.map((user) => (
                 <tr>
                   <td>{user.id}</td>
-                  <td>{user.photo}</td>
+                  <td>
+                    <span className='fas fa-portrait fa-2x icon-silver'></span>
+                  </td>
                   <td>{user.email}</td>
                   <td>{user.firstName}</td>
                   <td>{user.lastName}</td>
@@ -57,8 +59,33 @@ const AllUsers = ({ history }) => {
                       <span>{role.name},&nbsp;</span>
                     ))}
                   </td>
-                  <td>{user.enabled ? 'true' : 'false'}</td>
-                  <td>Edit Delete</td>
+                  <td>
+                    {user.enabled ? (
+                      <a
+                        className='fas fa-check-circle fa-2x'
+                        style={{ color: '#6495ED' }}
+                      ></a>
+                    ) : (
+                      <i
+                        class='fas fa-window-close fa-2x'
+                        style={{ color: 'red' }}
+                      ></i>
+                    )}
+                  </td>
+                  <td>
+                    <a
+                      className='fas fa-edit fa-2x icon-green'
+                      style={{ color: 'green' }}
+                      onClick={(e) =>
+                        history.push(`/admin/users/edit/${user.id}`)
+                      }
+                    ></a>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    <a
+                      className='fas fa-trash fa-2x '
+                      style={{ color: 'gray' }}
+                    ></a>
+                  </td>
                 </tr>
               ))
             ) : (

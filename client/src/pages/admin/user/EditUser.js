@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import {
-  getAllRoles,
-  createUser,
-  checkDuplicateEmail,
-} from '../../../functions/admin'
 import { toast } from 'react-toastify'
 import { Modal } from 'antd'
+import { getUserById } from '../../../functions/admin'
+import { getAllRoles } from '../../../functions/admin'
+import { updateUser } from '../../../functions/admin'
+import { checkEmailWhileUpdate } from '../../../functions/admin'
 
-const CreateUser = ({ history }) => {
+const EditUser = ({ history, match }) => {
+  const [id, setId] = useState('')
   const [email, setEmail] = useState('')
   const [roles, setRoles] = useState([])
   const [firstName, setFirstName] = useState('')
@@ -16,6 +16,8 @@ const CreateUser = ({ history }) => {
   const [enabled, setEnabled] = useState(false)
   const [userRoles, setUserRoles] = useState([0, 0, 0, 0, 0])
   const [isModalVisible, setIsModalVisible] = useState(false)
+
+  const userId = match.params.id
 
   //modal states
   const handleOk = () => {
@@ -26,10 +28,62 @@ const CreateUser = ({ history }) => {
   }
 
   useEffect(() => {
+    //get all roles first
     getAllRoles().then((response) => {
       setRoles(response.data)
     })
+
+    //get that particular user data
+    getUserById(userId)
+      .then((res) => {
+        setEmail(res.data.email)
+        setFirstName(res.data.firstName)
+        setLastName(res.data.lastName)
+        setEnabled(res.data.enabled)
+        setId(res.data.id)
+
+        //setting roles
+        res.data.roles.length > 0 &&
+          res.data.roles.map((role) => {
+            const value = userRoles
+            value[role.id] = role.id
+            setUserRoles([...value])
+          })
+      })
+      .catch((err) => {
+        toast.error(`user with id ${userId} does not exist`)
+        history.push('/admin/users/')
+      })
   }, [])
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+
+    const user = {
+      email,
+      firstName,
+      lastName,
+      password,
+      photos: null,
+      enabled,
+      roles: userRoles,
+    }
+
+    checkEmailWhileUpdate(email, id).then((response) => {
+      if (response.data === 'OK') {
+        updateUser(user, userId).then((res) => {
+          if (res.data === 'OK') {
+            history.push('/admin/users/')
+            toast.success('User Successfully updated')
+          } else {
+            toast.error('Something went wrong')
+          }
+        })
+      } else {
+        setIsModalVisible(true)
+      }
+    })
+  }
 
   const handleCheckBoxChange = (e) => {
     console.log(e.target.checked)
@@ -46,38 +100,9 @@ const CreateUser = ({ history }) => {
     console.log(userRoles)
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-
-    const user = {
-      email,
-      firstName,
-      lastName,
-      password,
-      photos: null,
-      enabled,
-      roles: userRoles,
-    }
-
-    checkDuplicateEmail(email).then((response) => {
-      if (response.data === 'OK') {
-        createUser(user).then((response) => {
-          if (response.data === 'OK') {
-            history.push('/admin/users/')
-            toast.success('User is created Successfully')
-          } else {
-            toast.error('Something went wrong')
-          }
-        })
-      } else {
-        setIsModalVisible(true)
-      }
-    })
-  }
-
   return (
     <div className='container-fluid'>
-      <h2>Create a new User</h2>
+      <h2>Update the record</h2>
       <br />
       <form
         style={{ maxWidth: '700px', margin: '0 auto' }}
@@ -132,7 +157,7 @@ const CreateUser = ({ history }) => {
               <input
                 type='password'
                 className='form-control'
-                required
+                placeholder='leave blank if dont want to change password'
                 minLength='8'
                 maxLength='20'
                 value={password}
@@ -151,6 +176,7 @@ const CreateUser = ({ history }) => {
                       type='checkbox'
                       value={role.id}
                       onChange={(e) => handleCheckBoxChange(e)}
+                      checked={role.id == userRoles[role.id]}
                     />
                     <span>
                       {role.name}:&nbsp; <small>{role.description}</small>
@@ -188,7 +214,6 @@ const CreateUser = ({ history }) => {
           </div>
         </div>
       </form>
-
       <Modal
         title='Warning'
         visible={isModalVisible}
@@ -201,4 +226,4 @@ const CreateUser = ({ history }) => {
   )
 }
 
-export default CreateUser
+export default EditUser

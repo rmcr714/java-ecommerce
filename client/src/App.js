@@ -7,6 +7,7 @@ import Header from './components/nav/Header'
 import AllUsers from './pages/admin/user/AllUsers'
 import Footer from './components/nav/Footer'
 import CreateUser from './pages/admin/user/CreateUser'
+import EditUser from './pages/admin/user/EditUser'
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <ToastContainer />
       <Route path='/admin/users' component={AllUsers} exact />
       <Route path='/admin/users/create' component={CreateUser} exact />
+      <Route path='/admin/users/edit/:id' component={EditUser} exact />
       <Footer />
     </Router>
   )

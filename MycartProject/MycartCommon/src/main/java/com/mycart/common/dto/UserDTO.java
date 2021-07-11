@@ -1,5 +1,6 @@
 package com.mycart.common.dto;
 
+import java.util.Arrays;
 import java.util.Set;
 
 
@@ -54,6 +55,12 @@ public class UserDTO {
 	public void setRoles(Integer[] roles) {
 		this.roles = roles;
 	}
+	@Override
+	public String toString() {
+		return "UserDTO [email=" + email + ", password=" + password + ", firstName=" + firstName + ", lastName="
+				+ lastName + ", photos=" + photos + ", enabled=" + enabled + ", roles=" + Arrays.toString(roles) + "]";
+	}
+	
 	
 	
 }
