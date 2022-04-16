@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import com.mycart.common.dto.ImageDTO;
 import com.mycart.common.dto.UserDTO;
 import com.mycart.common.entity.Role;
@@ -37,10 +36,32 @@ public class UserController {
 	
 	//get all the users
 	@GetMapping(value = "/")
-	public List<User> getAllUsers(){
+	public Map<Object,Object> listFirstPage(){
 		
-		return service.listAll();
 		
+		return listByPage(1);	
+	}
+	
+	@GetMapping(value = "/page/{pageNum}")
+	public Map<Object,Object> listByPage(@PathVariable Integer pageNum) {
+		
+		Page<User> pageUser = service.listByPage(pageNum); 
+		List<User> listUsers = pageUser.getContent();
+		
+		long startCount = (pageNum - 1)*UserConstants.USERS_PER_PAGE + 1; 
+		long endCount = startCount + UserConstants.USERS_PER_PAGE - 1;
+		
+		if(endCount > pageUser.getTotalElements()) {
+			endCount = pageUser.getTotalElements();
+		}
+		
+		Map<Object,Object> pageMap = new HashMap<>();
+		pageMap.put("startCount", startCount);
+		pageMap.put("endCount", endCount);
+		pageMap.put("totalItems", pageUser.getTotalElements());
+		pageMap.put("AllUsers", listUsers);
+
+		return pageMap;
 	}
 	
 	

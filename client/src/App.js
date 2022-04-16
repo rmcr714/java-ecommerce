@@ -17,6 +17,9 @@ function App() {
       <Route path='/admin/users' component={AllUsers} exact />
       <Route path='/admin/users/create' component={CreateUser} exact />
       <Route path='/admin/users/edit/:id' component={EditUser} exact />
+      <br />
+      <br />
+      <br />
       <Footer />
     </Router>
   )

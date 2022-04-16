@@ -8,6 +8,9 @@ import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,6 +38,12 @@ public class UserService {
 	
 	public List<User> listAll(){
 		return (List<User>) userRepo.findAll();
+		
+	}
+	
+	public Page<User> listByPage(int pageNum){
+		Pageable pageable = PageRequest.of(pageNum-1, UserConstants.USERS_PER_PAGE);
+		return userRepo.findAll(pageable);
 		
 	}
 	
