@@ -53,6 +53,15 @@
 	<artifactId>MycartCommon</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	</dependency>
+	<!-- https://mvnrepository.com/artifact/com.cloudinary/cloudinary-http44 -->
+   <dependency>
+      <groupId>com.cloudinary</groupId>
+      <artifactId>cloudinary-http44</artifactId>
+      <version>1.32.0</version>
+    </dependency>
+	
+	
+	
 	</dependencies>
 
 	

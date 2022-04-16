@@ -1,10 +1,14 @@
 package com.mycart.admin.user;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import com.mycart.common.dto.ImageDTO;
 import com.mycart.common.dto.UserDTO;
 import com.mycart.common.entity.Role;
 import com.mycart.common.entity.User;
@@ -74,7 +81,7 @@ public class UserController {
 	
 	
 	
-	//check for duplicate ids
+	//check for duplicate email ids
 	@GetMapping(value = "/check_email/{email}")
 	public String checkDuplicateEmail(@PathVariable("email") String email) {
 		
@@ -107,7 +114,7 @@ public class UserController {
 	
 
 	
-	
+	//Update an user based on id
 	@PostMapping(value="/edit/{id}")
 	public String editUser(@RequestBody UserDTO user,@PathVariable("id") Integer id) throws UserNotFoundException {
 		Integer data[]=user.getRoles();
@@ -142,6 +149,24 @@ public class UserController {
 		}
 		return "OK";
 	}
+	
+	
+	@DeleteMapping(value = "/delete/{id}")
+	public String deleteUser(@PathVariable Integer id) throws UserNotFoundException {
+		service.delete(id);
+		return "OK";
+	}
+	
+	
+	//upload image
+	//@param : ImageDTO image
+	//@out: object 
+	@PostMapping(value = "/upload")
+	public Map<Object,Object> upload(@RequestBody ImageDTO image) throws IOException {
+		return service.uploadImage(image);
+		
+	}
+	
 		
 		
 

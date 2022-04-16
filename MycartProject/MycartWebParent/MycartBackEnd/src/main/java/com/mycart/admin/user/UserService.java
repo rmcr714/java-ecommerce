@@ -1,14 +1,22 @@
 package com.mycart.admin.user;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import com.mycart.common.entity.User;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import com.mycart.common.dto.ImageDTO;
 import com.mycart.common.entity.Role;
+import com.mycart.common.entity.User;
 
 @Service
 public class UserService {
@@ -21,6 +29,9 @@ public class UserService {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+    private Environment env;
 	
 	public List<User> listAll(){
 		return (List<User>) userRepo.findAll();
@@ -72,7 +83,7 @@ public class UserService {
 	
 	
 	
-	
+	//get an user with a specific id
 	public User get(Integer id) throws UserNotFoundException {
 		try {
 		return userRepo.findById(id).get();
@@ -80,5 +91,39 @@ public class UserService {
 			throw new UserNotFoundException("Could not find any user with the id "+id);
 		}
 	}
+	
+	//delete an user with a specific id
+	public void delete(Integer id) throws UserNotFoundException {
+		Long countById = userRepo.countById(id);
+		if(countById== null || countById == 0) {
+			throw new UserNotFoundException("No user found with the id "+id);
+		}
+		
+		userRepo.deleteById(id);
+	}
+	
+	
+	
+	public Map<Object,Object> uploadImage(@RequestBody ImageDTO image) throws IOException {
+		System.out.println("here");
+		System.out.println(image.getImage());
+		Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
+				"cloud_name", env.getProperty("cname"),
+				"api_key", env.getProperty("apikey"),
+				"api_secret", env.getProperty("apisecret"),
+				"secure", true));
+		
+		
+		
+		 Map uploadResult = cloudinary.uploader().upload(image.getImage(), ObjectUtils.emptyMap());
+		
+		Map<Object,Object> map = new HashMap<>();
+		map.put("public_id",uploadResult.get("public_id"));
+		map.put("secure_url",uploadResult.get("secure_url"));
+
+		return map;
+		
+	}
+	
 	
 }

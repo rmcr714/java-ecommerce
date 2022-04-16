@@ -18,3 +18,6 @@ export const getUserById = async (id) =>
 
 export const updateUser = async (user, id) =>
   await axios.post(`/api/users/edit/${id}`, user)
+
+export const deleteUser = async (id) =>
+  await axios.delete(`/api/users/delete/${id}`, {})

@@ -6,6 +6,7 @@ import {
 } from '../../../functions/admin'
 import { toast } from 'react-toastify'
 import { Modal } from 'antd'
+// import FileUpload from '../../../components/forms/FileUpload'
 
 const CreateUser = ({ history }) => {
   const [email, setEmail] = useState('')
@@ -15,7 +16,10 @@ const CreateUser = ({ history }) => {
   const [password, setPassword] = useState('')
   const [enabled, setEnabled] = useState(false)
   const [userRoles, setUserRoles] = useState([0, 0, 0, 0, 0])
+  // const [photo, setPhoto] = useState({})
   const [isModalVisible, setIsModalVisible] = useState(false)
+
+  const [loading, setLoading] = useState(false)
 
   //modal states
   const handleOk = () => {
@@ -174,6 +178,16 @@ const CreateUser = ({ history }) => {
               Enabled
             </div>
           </div>
+          {/* <div className='form-group row'>
+            <label className='col-sm-4 col-form-label'>Roles:</label>
+            <FileUpload
+              values={photo}
+              setValues={setPhoto}
+              loading={loading}
+              setLoading={setLoading}
+            />
+          </div> */}
+
           <div className='text-center'>
             <button type='submit' className='btn btn-primary m-3'>
               Submit

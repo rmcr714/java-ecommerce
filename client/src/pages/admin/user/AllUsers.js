@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { getAllUsers } from '../../../functions/admin'
 import { Link } from 'react-router-dom'
+import { deleteUser } from '../../../functions/admin'
+import { toast } from 'react-toastify'
 
 const AllUsers = ({ history }) => {
   const [users, setUsers] = useState([])
@@ -8,11 +10,34 @@ const AllUsers = ({ history }) => {
 
   useEffect(() => {
     setLoading(true)
+    console.log('runing')
     getAllUsers().then((response) => {
       setUsers(response.data)
+      console.log(response.data)
     })
     setLoading(false)
   }, [])
+
+  const deleteUsers = (id) => {
+    console.log(id)
+
+    if (window.confirm('Confirm to delete user id ' + id)) {
+      deleteUser(id)
+        .then((res) => {
+          if (res.data == 'OK') {
+            toast.success('User successfully deleted')
+            setLoading(true)
+            getAllUsers().then((response) => {
+              setUsers(response.data)
+            })
+            setLoading(false)
+          }
+        })
+        .catch((err) => {
+          toast.error(`user with id ${id} does not exist`)
+        })
+    }
+  }
 
   return (
     <div className='container-fluid'>
@@ -67,7 +92,7 @@ const AllUsers = ({ history }) => {
                       ></a>
                     ) : (
                       <i
-                        class='fas fa-window-close fa-2x'
+                      className='fas fa-window-close fa-2x'
                         style={{ color: 'red' }}
                       ></i>
                     )}
@@ -84,6 +109,7 @@ const AllUsers = ({ history }) => {
                     <a
                       className='fas fa-trash fa-2x '
                       style={{ color: 'gray' }}
+                      onClick={(e) => deleteUsers(user.id)}
                     ></a>
                   </td>
                 </tr>
