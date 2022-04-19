@@ -2,9 +2,12 @@ import axios from 'axios'
 
 export const getAllUsers = async () => await axios.get('/api/users/', {})
 
-//get users by page size i.e pagination
-export const getUsersByPage = async (pageNum) =>
-  await axios.get(`/api/users/page/${pageNum}`, {})
+//get users by page size i.e pagination and sorting
+export const getUsersByPage = async (pageNum, sortField, sortDir, keyword) =>
+  await axios.get(
+    `/api/users/page/${pageNum}/sort?sortField=${sortField}&sortDir=${sortDir}&keyword=${keyword}`,
+    {}
+  )
 
 export const getAllRoles = async () => await axios.get('/api/users/roles', {})
 

@@ -74,7 +74,7 @@ const EditUser = ({ history, match }) => {
         updateUser(user, userId).then((res) => {
           if (res.data === 'OK') {
             history.push('/admin/users/')
-            toast.success('User Successfully updated')
+            toast.success(`User with is ${userId} Successfully updated`)
           } else {
             toast.error('Something went wrong')
           }

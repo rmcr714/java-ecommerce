@@ -11,6 +11,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,9 @@ import com.cloudinary.utils.ObjectUtils;
 import com.mycart.common.dto.ImageDTO;
 import com.mycart.common.entity.Role;
 import com.mycart.common.entity.User;
+
+
+import javassist.expr.Instanceof;
 
 @Service
 public class UserService {
@@ -41,8 +45,17 @@ public class UserService {
 		
 	}
 	
-	public Page<User> listByPage(int pageNum){
-		Pageable pageable = PageRequest.of(pageNum-1, UserConstants.USERS_PER_PAGE);
+	public Page<User> listByPage(int pageNum,String sortField,String sortDir,String keyword){
+	
+		Sort sort = Sort.by(sortField);
+		sort = sortDir.equals("asc")?sort.ascending():sort.descending();
+		Pageable pageable = PageRequest.of(pageNum-1, UserConstants.USERS_PER_PAGE,sort);
+		
+		if(keyword!=null) {
+			System.out.println("im here");
+			return userRepo.findAll(keyword,pageable);
+		}
+		
 		return userRepo.findAll(pageable);
 		
 	}

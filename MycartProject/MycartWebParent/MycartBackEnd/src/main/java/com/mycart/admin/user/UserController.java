@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.domain.Page;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,13 +41,16 @@ public class UserController {
 	public Map<Object,Object> listFirstPage(){
 		
 		
-		return listByPage(1);	
+		return listByPage(1,"firstName","asc",null);	
 	}
 	
-	@GetMapping(value = "/page/{pageNum}")
-	public Map<Object,Object> listByPage(@PathVariable Integer pageNum) {
+	
+    //Get users data by pagination and sorting	
+	@GetMapping(value = "/page/{pageNum}/sort")
+	public Map<Object,Object> listByPage(@PathVariable Integer pageNum,@Param("sortField") String 
+			sortField,@Param("sortField") String sortDir,@Param("keyword") String keyword ) {
 		
-		Page<User> pageUser = service.listByPage(pageNum); 
+		Page<User> pageUser = service.listByPage(pageNum,sortField,sortDir,keyword); 
 		List<User> listUsers = pageUser.getContent();
 		
 		long startCount = (pageNum - 1)*UserConstants.USERS_PER_PAGE + 1; 
@@ -63,6 +68,9 @@ public class UserController {
 
 		return pageMap;
 	}
+	
+	
+	
 	
 	
 	//Get all the Available roles

@@ -9,25 +9,64 @@ const AllUsers = ({ history }) => {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(false)
 
-  //pagination
+  //pagination and sorting
   const [usersCount, setUsersCount] = useState(0)
   const [page, setPage] = useState(1)
   const [startCount, setStartCount] = useState(0)
   const [endCount, setEndCount] = useState(0)
+  const [sortField, setSortField] = useState('firstName')
+  const [sortDir, setSortDir] = useState('asc')
+  const [keyword, setKeyword] = useState('')
 
+  //sort the rows
+  function dynamicSort(property, order) {
+    var sortOrder = order
+    if (property[0] === '-') {
+      sortOrder = -1
+      property = property.substr(1)
+    }
+    return function (a, b) {
+      /* next line works with strings and numbers,
+       * and you may want to customize it to your needs
+       */
+      var result =
+        a[property] < b[property] ? -1 : a[property] > b[property] ? 1 : 0
+      return result * sortOrder
+    }
+  }
+
+  const sortData = (value, order) => {
+    console.log('gifd')
+    let temp = []
+    temp = [...users]
+    temp.sort(dynamicSort(value, order))
+    setUsers(temp)
+  }
+
+  //**get all users data
+  const getUserData = (page, sortField, sortDir, search) => {
+    getUsersByPage(page, sortField, sortDir, search)
+      .then((response) => {
+        setUsersCount(response.data.totalItems)
+        setUsers(response.data.AllUsers)
+        setStartCount(response.data.startCount)
+        setEndCount(response.data.endCount)
+        // console.log(response.data.AllUsers)
+      })
+      .catch((err) => {
+        toast.error(`user  does not exist`)
+      })
+  }
+
+  //useEffect
   useEffect(() => {
     setLoading(true)
-    console.log('runing')
-    getUsersByPage(page).then((response) => {
-      setUsersCount(response.data.totalItems)
-      setUsers(response.data.AllUsers)
-      setStartCount(response.data.startCount)
-      setEndCount(response.data.endCount)
-      console.log(response.data)
-    })
+    // console.log('runing')
+    getUserData(page, sortField, sortDir, keyword)
     setLoading(false)
   }, [page])
 
+  //delete user
   const deleteUsers = (id) => {
     console.log(id)
 
@@ -37,12 +76,8 @@ const AllUsers = ({ history }) => {
           if (res.data == 'OK') {
             toast.success('User successfully deleted')
             setLoading(true)
-            getUsersByPage(1).then((response) => {
-              setUsersCount(response.data.totalItems)
-              setUsers(response.data.AllUsers)
-              setStartCount(response.data.startCount)
-              setEndCount(response.data.endCount)
-            })
+            getUserData(1, 'firstName', 'asc', '')
+
             setLoading(false)
           }
         })
@@ -66,6 +101,38 @@ const AllUsers = ({ history }) => {
         </button>
         <br />
       </Link>
+      <div>
+        <form className='form-inline'>
+          <h6>Filter</h6>&nbsp;&nbsp;
+          <input
+            type='search'
+            class='form-control'
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+          />
+          &nbsp; &nbsp;
+          <button
+            type='button'
+            class='btn btn-primary'
+            onClick={() => getUserData(page, sortField, sortDir, keyword)}
+            disabled={keyword.length == 0}
+          >
+            Search
+          </button>
+          &nbsp;
+          <button
+            type='button'
+            class='btn btn-secondary'
+            onClick={() => {
+              getUserData(page, sortField, sortDir, '')
+              setKeyword('')
+            }}
+            disabled={keyword.length == 0}
+          >
+            Cancel
+          </button>
+        </form>
+      </div>
       <br />
 
       {loading ? (
@@ -79,13 +146,72 @@ const AllUsers = ({ history }) => {
           <table className='table table-bordered table-striped table-hover table-responsive-xl'>
             <thead className='thead-dark'>
               <tr>
-                <th>User Id</th>
+                <th>
+                  User Id
+                  <span onClick={() => sortData('id', 1)} className='ml-4'>
+                    <a className='fas fa-sort-up'></a>
+                  </span>
+                  <span onClick={() => sortData('id', -1)} className='ml-2'>
+                    <a className='fas fa-sort-down'></a>
+                  </span>
+                </th>
                 <th>Photo</th>
-                <th>Email</th>
-                <th>First Name</th>
-                <th>Last Name</th>
+                <th>
+                  Email
+                  <span onClick={() => sortData('email', 1)} className='ml-4'>
+                    <a className='fas fa-sort-up'></a>
+                  </span>
+                  <span onClick={() => sortData('email', -1)} className='ml-2'>
+                    <a className='fas fa-sort-down'></a>
+                  </span>
+                </th>
+                <th>
+                  First Name
+                  <span
+                    onClick={() => sortData('firstName', 1)}
+                    className='ml-4'
+                  >
+                    <a className='fas fa-sort-up'></a>
+                  </span>
+                  <span
+                    onClick={() => sortData('firstName', -1)}
+                    className='ml-2'
+                  >
+                    <a className='fas fa-sort-down'></a>
+                  </span>
+                </th>
+                <th>
+                  Last Name
+                  <span
+                    onClick={() => sortData('lastName', 1)}
+                    className='ml-4'
+                  >
+                    <a className='fas fa-sort-up'></a>
+                  </span>
+                  <span
+                    onClick={() => sortData('lastName', -1)}
+                    className='ml-2'
+                  >
+                    <a className='fas fa-sort-down'></a>
+                  </span>
+                </th>
                 <th>Roles</th>
-                <th>Enabled</th>
+                <th>
+                  Enabled
+                  <span
+                    onClick={() => sortData('enabled', 1)}
+                    className='ml-4 a'
+                  >
+                    <a className='fas fa-sort-up'></a>
+                  </span>
+                  <span
+                    onClick={() => sortData('enabled', -1)}
+                    className='ml-2 a'
+                  >
+                    <a className='fas fa-sort-down'></a>
+                  </span>
+                </th>
+                <th>Action</th>
                 <th></th>
               </tr>
             </thead>
@@ -143,7 +269,7 @@ const AllUsers = ({ history }) => {
             </tbody>
           </table>
           <br />
-
+          {/* Pagination Section */}
           <div className='row'>
             <nav className='col-md-4 offset-md-4 text-center  p-2'>
               <h6>
