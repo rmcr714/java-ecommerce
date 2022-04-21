@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { getAllUsers, getUsersByPage } from '../../../functions/admin'
+import {
+  getAllUsers,
+  getUsersByPage,
+  exportUsersToExcel,
+} from '../../../functions/admin'
 import { Link } from 'react-router-dom'
 import { deleteUser } from '../../../functions/admin'
 import { toast } from 'react-toastify'
 import { Pagination } from 'antd'
+import AllUsersMobile from './AllUsersMobile'
+import axios from 'axios'
 
 const AllUsers = ({ history }) => {
   const [users, setUsers] = useState([])
@@ -87,20 +93,34 @@ const AllUsers = ({ history }) => {
     }
   }
 
+  //export to excel
+  const exportToExcel = () => {
+    exportUsersToExcel().catch((err) => toast.error('Something went wrong!'))
+  }
+
   return (
     <div className='container-fluid'>
       <br />
 
       <h2>Manage Users</h2>
-      <Link
-        onClick={() => history.push('/admin/users/create')}
-        style={{ textDecoration: 'none' }}
-      >
-        <button style={{ color: 'white', background: 'black' }} className='h6'>
+      <div>
+        <Link
+          onClick={() => history.push('/admin/users/create')}
+          style={{ textDecoration: 'none' }}
+        >
+          {/* <button style={{ color: 'white', background: 'black' }} className='h6'>
           Create New User
-        </button>
-        <br />
-      </Link>
+        </button> */}
+          <a className='fas fa-user-plus fa-2x icon-dark'></a>
+        </Link>
+        &nbsp; &nbsp;| &nbsp;&nbsp;
+        <a
+          className='fas fa-file-excel fa-2x icon-dark'
+          onClick={() => exportToExcel()}
+        />
+      </div>
+      <br />
+
       <div>
         <form className='form-inline'>
           <h6>Filter</h6>&nbsp;&nbsp;
@@ -117,7 +137,7 @@ const AllUsers = ({ history }) => {
             onClick={() => getUserData(page, sortField, sortDir, keyword)}
             disabled={keyword.length == 0}
           >
-            Search
+            <i className='fas fa-search  '></i>
           </button>
           &nbsp;
           <button
@@ -129,7 +149,7 @@ const AllUsers = ({ history }) => {
             }}
             disabled={keyword.length == 0}
           >
-            Cancel
+            <i className='fas fa-eraser  '></i>
           </button>
         </form>
       </div>
@@ -143,131 +163,142 @@ const AllUsers = ({ history }) => {
         </div>
       ) : (
         <div>
-          <table className='table table-bordered table-striped table-hover table-responsive-xl'>
-            <thead className='thead-dark'>
-              <tr>
-                <th>
-                  User Id
-                  <span onClick={() => sortData('id', 1)} className='ml-4'>
-                    <a className='fas fa-sort-up'></a>
-                  </span>
-                  <span onClick={() => sortData('id', -1)} className='ml-2'>
-                    <a className='fas fa-sort-down'></a>
-                  </span>
-                </th>
-                <th>Photo</th>
-                <th>
-                  Email
-                  <span onClick={() => sortData('email', 1)} className='ml-4'>
-                    <a className='fas fa-sort-up'></a>
-                  </span>
-                  <span onClick={() => sortData('email', -1)} className='ml-2'>
-                    <a className='fas fa-sort-down'></a>
-                  </span>
-                </th>
-                <th>
-                  First Name
-                  <span
-                    onClick={() => sortData('firstName', 1)}
-                    className='ml-4'
-                  >
-                    <a className='fas fa-sort-up'></a>
-                  </span>
-                  <span
-                    onClick={() => sortData('firstName', -1)}
-                    className='ml-2'
-                  >
-                    <a className='fas fa-sort-down'></a>
-                  </span>
-                </th>
-                <th>
-                  Last Name
-                  <span
-                    onClick={() => sortData('lastName', 1)}
-                    className='ml-4'
-                  >
-                    <a className='fas fa-sort-up'></a>
-                  </span>
-                  <span
-                    onClick={() => sortData('lastName', -1)}
-                    className='ml-2'
-                  >
-                    <a className='fas fa-sort-down'></a>
-                  </span>
-                </th>
-                <th>Roles</th>
-                <th>
-                  Enabled
-                  <span
-                    onClick={() => sortData('enabled', 1)}
-                    className='ml-4 a'
-                  >
-                    <a className='fas fa-sort-up'></a>
-                  </span>
-                  <span
-                    onClick={() => sortData('enabled', -1)}
-                    className='ml-2 a'
-                  >
-                    <a className='fas fa-sort-down'></a>
-                  </span>
-                </th>
-                <th>Action</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.length > 0 ? (
-                users.map((user) => (
-                  <tr>
-                    <td>{user.id}</td>
-                    <td>
-                      <span className='fas fa-portrait fa-2x icon-silver'></span>
-                    </td>
-                    <td>{user.email}</td>
-                    <td>{user.firstName}</td>
-                    <td>{user.lastName}</td>
-                    <td>
-                      {user.roles.map((role) => (
-                        <span>{role.name},&nbsp;</span>
-                      ))}
-                    </td>
-                    <td>
-                      {user.enabled ? (
+          <div className='full-details'>
+            <table className='table table-bordered table-striped table-hover table-responsive-xl'>
+              <thead className='thead-dark'>
+                <tr>
+                  <th>
+                    User Id
+                    <span onClick={() => sortData('id', 1)} className='ml-4'>
+                      <a className='fas fa-sort-up'></a>
+                    </span>
+                    <span onClick={() => sortData('id', -1)} className='ml-2'>
+                      <a className='fas fa-sort-down'></a>
+                    </span>
+                  </th>
+                  <th>Photo</th>
+                  <th>
+                    Email
+                    <span onClick={() => sortData('email', 1)} className='ml-4'>
+                      <a className='fas fa-sort-up'></a>
+                    </span>
+                    <span
+                      onClick={() => sortData('email', -1)}
+                      className='ml-2'
+                    >
+                      <a className='fas fa-sort-down'></a>
+                    </span>
+                  </th>
+                  <th>
+                    First Name
+                    <span
+                      onClick={() => sortData('firstName', 1)}
+                      className='ml-4'
+                    >
+                      <a className='fas fa-sort-up'></a>
+                    </span>
+                    <span
+                      onClick={() => sortData('firstName', -1)}
+                      className='ml-2'
+                    >
+                      <a className='fas fa-sort-down'></a>
+                    </span>
+                  </th>
+                  <th>
+                    Last Name
+                    <span
+                      onClick={() => sortData('lastName', 1)}
+                      className='ml-4'
+                    >
+                      <a className='fas fa-sort-up'></a>
+                    </span>
+                    <span
+                      onClick={() => sortData('lastName', -1)}
+                      className='ml-2'
+                    >
+                      <a className='fas fa-sort-down'></a>
+                    </span>
+                  </th>
+                  <th>Roles</th>
+                  <th>
+                    Enabled
+                    <span
+                      onClick={() => sortData('enabled', 1)}
+                      className='ml-4 a'
+                    >
+                      <a className='fas fa-sort-up'></a>
+                    </span>
+                    <span
+                      onClick={() => sortData('enabled', -1)}
+                      className='ml-2 a'
+                    >
+                      <a className='fas fa-sort-down'></a>
+                    </span>
+                  </th>
+                  <th>Action</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.length > 0 ? (
+                  users.map((user) => (
+                    <tr>
+                      <td>{user.id}</td>
+                      <td>
+                        <span className='fas fa-portrait fa-2x icon-silver'></span>
+                      </td>
+                      <td>{user.email}</td>
+                      <td>{user.firstName}</td>
+                      <td>{user.lastName}</td>
+                      <td>
+                        {user.roles.map((role) => (
+                          <span>{role.name},&nbsp;</span>
+                        ))}
+                      </td>
+                      <td>
+                        {user.enabled ? (
+                          <a
+                            className='fas fa-check-circle fa-2x'
+                            style={{ color: '#6495ED' }}
+                          ></a>
+                        ) : (
+                          <i
+                            className='fas fa-window-close fa-2x'
+                            style={{ color: 'red' }}
+                          ></i>
+                        )}
+                      </td>
+                      <td>
                         <a
-                          className='fas fa-check-circle fa-2x'
-                          style={{ color: '#6495ED' }}
+                          className='fas fa-edit fa-2x icon-green'
+                          style={{ color: 'green' }}
+                          onClick={(e) =>
+                            history.push(`/admin/users/edit/${user.id}`)
+                          }
                         ></a>
-                      ) : (
-                        <i
-                          className='fas fa-window-close fa-2x'
-                          style={{ color: 'red' }}
-                        ></i>
-                      )}
-                    </td>
-                    <td>
-                      <a
-                        className='fas fa-edit fa-2x icon-green'
-                        style={{ color: 'green' }}
-                        onClick={(e) =>
-                          history.push(`/admin/users/edit/${user.id}`)
-                        }
-                      ></a>
-                      &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                      <a
-                        className='fas fa-trash fa-2x '
-                        style={{ color: 'gray' }}
-                        onClick={(e) => deleteUsers(user.id)}
-                      ></a>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <div className='text-centre text-danger'>
-                  Sorry something went wrong
-                </div>
-              )}
-            </tbody>
-          </table>
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                        <a
+                          className='fas fa-trash fa-2x '
+                          style={{ color: 'gray' }}
+                          onClick={(e) => deleteUsers(user.id)}
+                        ></a>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <div className='text-centre text-danger'>
+                    Sorry something went wrong
+                  </div>
+                )}
+              </tbody>
+            </table>
+          </div>
+          {/* For mobile view */}
+          <AllUsersMobile
+            users={users}
+            deleteUsers={deleteUsers}
+            history={history}
+          />
           <br />
           {/* Pagination Section */}
           <div className='row'>

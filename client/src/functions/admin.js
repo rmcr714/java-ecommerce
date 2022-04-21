@@ -28,3 +28,26 @@ export const updateUser = async (user, id) =>
 
 export const deleteUser = async (id) =>
   await axios.delete(`/api/users/delete/${id}`, {})
+
+//export excel
+export const exportUsersToExcel = async () =>
+  await axios
+    .get('/api/users/export/excel', {
+      headers: {
+        'Content-Disposition': 'attachment',
+        'Content-Type':
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      },
+      responseType: 'arraybuffer',
+    })
+    .then((response) => {
+      const url = window.URL.createObjectURL(new Blob([response.data]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute(
+        'download',
+        `Users_${new Date().toLocaleString() + ''}.xlsx`
+      )
+      document.body.appendChild(link)
+      link.click()
+    })

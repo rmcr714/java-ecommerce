@@ -5,8 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
@@ -194,6 +195,15 @@ public class UserController {
 	public Map<Object,Object> upload(@RequestBody ImageDTO image) throws IOException {
 		return service.uploadImage(image);
 		
+	}
+	
+	
+	//Export to Excel
+	@GetMapping(value = "/export/excel")
+	public void exporTotExcel(HttpServletResponse response) throws IOException {
+		List<User> listUsers = service.listAll();
+		UserExcelExporter exporter = new UserExcelExporter();
+		exporter.export(listUsers, response);
 	}
 	
 		

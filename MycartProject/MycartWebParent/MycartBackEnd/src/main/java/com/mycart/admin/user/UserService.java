@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.cloudinary.Cloudinary;
@@ -23,8 +24,8 @@ import com.mycart.common.entity.Role;
 import com.mycart.common.entity.User;
 
 
-import javassist.expr.Instanceof;
 
+@Transactional
 @Service
 public class UserService {
 
