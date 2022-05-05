@@ -3,12 +3,13 @@ import {
   getAllRoles,
   createUser,
   checkDuplicateEmail,
-} from '../../../functions/admin'
+} from '../../../functions/admin/users/users'
 import { toast } from 'react-toastify'
 import { Modal } from 'antd'
 // import FileUpload from '../../../components/forms/FileUpload'
 
 const CreateUser = ({ history }) => {
+  /***********************************  Form States  ***************************************/
   const [email, setEmail] = useState('')
   const [roles, setRoles] = useState([])
   const [firstName, setFirstName] = useState('')
@@ -17,11 +18,11 @@ const CreateUser = ({ history }) => {
   const [enabled, setEnabled] = useState(false)
   const [userRoles, setUserRoles] = useState([0, 0, 0, 0, 0])
   // const [photo, setPhoto] = useState({})
-  const [isModalVisible, setIsModalVisible] = useState(false)
 
+  /***********************************  modal States  ***************************************/
+  const [isModalVisible, setIsModalVisible] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  //modal states
   const handleOk = () => {
     setIsModalVisible(false)
   }

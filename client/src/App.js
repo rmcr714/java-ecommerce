@@ -8,6 +8,9 @@ import AllUsers from './pages/admin/user/AllUsers'
 import Footer from './components/nav/Footer'
 import CreateUser from './pages/admin/user/CreateUser'
 import EditUser from './pages/admin/user/EditUser'
+import AllCategories from './pages/admin/categories/AllCategories'
+import CreateCategory from './pages/admin/categories/CreateCategory'
+import EditCategory from './pages/admin/categories/EditCategory'
 
 function App() {
   return (
@@ -17,6 +20,9 @@ function App() {
       <Route path='/admin/users' component={AllUsers} exact />
       <Route path='/admin/users/create' component={CreateUser} exact />
       <Route path='/admin/users/edit/:id' component={EditUser} exact />
+      <Route path='/admin/categories' component={AllCategories} exact />
+      <Route path='/admin/categories/create' component={CreateCategory} exact />
+      <Route path='/admin/categories/edit/:id' component={EditCategory} exact />
       <br />
       <br />
       <br />

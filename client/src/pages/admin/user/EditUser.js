@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { Modal } from 'antd'
-import { getUserById } from '../../../functions/admin'
-import { getAllRoles } from '../../../functions/admin'
-import { updateUser } from '../../../functions/admin'
-import { checkEmailWhileUpdate } from '../../../functions/admin'
+import { getUserById } from '../../../functions/admin/users/users'
+import { getAllRoles } from '../../../functions/admin/users/users'
+import { updateUser } from '../../../functions/admin/users/users'
+import { checkEmailWhileUpdate } from '../../../functions/admin/users/users'
 
 const EditUser = ({ history, match }) => {
+  /****************************************** STATE TO HOLD USER DATA TO EDIT **************************** */
   const [id, setId] = useState('')
   const [email, setEmail] = useState('')
   const [roles, setRoles] = useState([])
@@ -15,11 +16,11 @@ const EditUser = ({ history, match }) => {
   const [password, setPassword] = useState('')
   const [enabled, setEnabled] = useState(false)
   const [userRoles, setUserRoles] = useState([0, 0, 0, 0, 0])
-  const [isModalVisible, setIsModalVisible] = useState(false)
 
   const userId = match.params.id
 
-  //modal states
+  /********************************************** MODAL STATES AND FUNCTIONS*****************************/
+  const [isModalVisible, setIsModalVisible] = useState(false)
   const handleOk = () => {
     setIsModalVisible(false)
   }
@@ -27,13 +28,14 @@ const EditUser = ({ history, match }) => {
     setIsModalVisible(false)
   }
 
+  /*******************************USEEFFECT ************************************************************* */
   useEffect(() => {
     //get all roles first
     getAllRoles().then((response) => {
       setRoles(response.data)
     })
 
-    //get that particular user data
+    /*********************************GET USER DATA WITH A SPECIFIC ID ************************************ */
     getUserById(userId)
       .then((res) => {
         setEmail(res.data.email)
@@ -56,6 +58,7 @@ const EditUser = ({ history, match }) => {
       })
   }, [])
 
+  /***************************************************SUBMIT AFTER EDIT***********************************/
   const handleSubmit = (e) => {
     e.preventDefault()
 
@@ -69,6 +72,7 @@ const EditUser = ({ history, match }) => {
       roles: userRoles,
     }
 
+    /****************************************************CHECK IF EMAIL IS UNIQUE **************************************/
     checkEmailWhileUpdate(email, id).then((response) => {
       if (response.data === 'OK') {
         updateUser(user, userId).then((res) => {
@@ -85,6 +89,7 @@ const EditUser = ({ history, match }) => {
     })
   }
 
+  /*************************************************MANAGE CHECKBOX CHANGE*********************************************** */
   const handleCheckBoxChange = (e) => {
     console.log(e.target.checked)
     if (e.target.checked) {

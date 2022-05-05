@@ -52,7 +52,7 @@ public class UserService {
 		sort = sortDir.equals("asc")?sort.ascending():sort.descending();
 		Pageable pageable = PageRequest.of(pageNum-1, UserConstants.USERS_PER_PAGE,sort);
 		
-		if(keyword!=null) {
+		if(keyword.length()>0) {
 			System.out.println("im here");
 			return userRepo.findAll(keyword,pageable);
 		}

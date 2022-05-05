@@ -1,5 +1,7 @@
 import axios from 'axios'
 
+/**************************     Create and manage Users by Admin                  ************************************/
+
 export const getAllUsers = async () => await axios.get('/api/users/', {})
 
 //get users by page size i.e pagination and sorting
@@ -51,3 +53,5 @@ export const exportUsersToExcel = async () =>
       document.body.appendChild(link)
       link.click()
     })
+
+/**********************************************************************************************************/

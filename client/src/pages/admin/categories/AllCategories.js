@@ -1,26 +1,25 @@
 import React, { useEffect, useState } from 'react'
-import {
-  getAllUsers,
-  getUsersByPage,
-  exportUsersToExcel,
-} from '../../../functions/admin/users/users'
 import { Link } from 'react-router-dom'
-import { deleteUser } from '../../../functions/admin/users/users'
+import {
+  deleteCategory,
+  exportCategoriesToExcel,
+  getCategoriesByPage,
+} from '../../../functions/admin/categories/categories'
 import { toast } from 'react-toastify'
 import { Pagination } from 'antd'
-import AllUsersMobile from './AllUsersMobile'
-import axios from 'axios'
+import AllCategoriesMobile from './AllCategoriesMobile'
 
-const AllUsers = ({ history }) => {
-  const [users, setUsers] = useState([])
+const AllCategories = ({ history }) => {
+  const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false)
 
   /*************************    pagination and sorting ***************************************************/
-  const [usersCount, setUsersCount] = useState(0)
+  const [categoriesCount, setCategoriesCount] = useState(0)
   const [page, setPage] = useState(1)
   const [startCount, setStartCount] = useState(0)
   const [endCount, setEndCount] = useState(0)
-  const [sortField, setSortField] = useState('firstName')
+  const [pageSize, setPageSize] = useState(1)
+  const [sortField, setSortField] = useState('id')
   const [sortDir, setSortDir] = useState('asc')
   const [keyword, setKeyword] = useState('')
 
@@ -44,19 +43,21 @@ const AllUsers = ({ history }) => {
   const sortData = (value, order) => {
     console.log('gifd')
     let temp = []
-    temp = [...users]
+    temp = [...categories]
     temp.sort(dynamicSort(value, order))
-    setUsers(temp)
+    setCategories(temp)
   }
 
-  /******************************************* get all users data *********************************************/
-  const getUserData = (page, sortField, sortDir, search) => {
-    getUsersByPage(page, sortField, sortDir, search)
+  /******************************************* get all categories data *********************************************/
+  const getCategoriesData = (page, sortField, sortDir, search) => {
+    getCategoriesByPage(page, sortField, sortDir, search)
       .then((response) => {
-        setUsersCount(response.data.totalItems)
-        setUsers(response.data.AllUsers)
+        console.log(response)
+        setCategoriesCount(response.data.totalItems)
+        setCategories(response.data.AllCategories)
         setStartCount(response.data.startCount)
         setEndCount(response.data.endCount)
+        setPageSize(response.data.pageSize)
         // console.log(response.data.AllUsers)
       })
       .catch((err) => {
@@ -68,34 +69,34 @@ const AllUsers = ({ history }) => {
   useEffect(() => {
     setLoading(true)
     // console.log('runing')
-    getUserData(page, sortField, sortDir, keyword)
+    getCategoriesData(page, sortField, sortDir, keyword)
     setLoading(false)
   }, [page])
 
-  /****************************************** delete user **************************************************/
-  const deleteUsers = (id) => {
-    console.log(id)
-
-    if (window.confirm('Confirm to delete user id ' + id)) {
-      deleteUser(id)
+  /**********************************   delete Category ********************************************/
+  const deleteCategoryById = (id) => {
+    if (window.confirm('Confirm to delete cateogy id ' + id)) {
+      console.log(id)
+      deleteCategory(id)
         .then((res) => {
           if (res.data == 'OK') {
-            toast.success('User successfully deleted')
+            toast.success('Category successfully deleted')
             setLoading(true)
-            getUserData(1, 'firstName', 'asc', '')
-
+            getCategoriesData(page, sortField, sortDir, keyword)
             setLoading(false)
           }
         })
         .catch((err) => {
-          toast.error(`user with id ${id} does not exist`)
+          toast.error(`category with id ${id} does not exist`)
         })
     }
   }
 
-  /************************************************** export to excel *********************************/
+  /**************************************  export to excel ******************************************************/
   const exportToExcel = () => {
-    exportUsersToExcel().catch((err) => toast.error('Something went wrong!'))
+    exportCategoriesToExcel().catch((err) =>
+      toast.error('Something went wrong!')
+    )
   }
 
   return (
@@ -105,12 +106,12 @@ const AllUsers = ({ history }) => {
       <h2>Manage Users</h2>
       <div>
         <Link
-          onClick={() => history.push('/admin/users/create')}
+          onClick={() => history.push('/admin/categories/create')}
           style={{ textDecoration: 'none' }}
         >
           {/* <button style={{ color: 'white', background: 'black' }} className='h6'>
-          Create New User
-        </button> */}
+              Create New User
+            </button> */}
           <a className='fas fa-user-plus fa-2x icon-dark'></a>
         </Link>
         &nbsp; &nbsp;| &nbsp;&nbsp;
@@ -134,7 +135,7 @@ const AllUsers = ({ history }) => {
           <button
             type='button'
             class='btn btn-primary'
-            onClick={() => getUserData(page, sortField, sortDir, keyword)}
+            onClick={() => getCategoriesData(page, sortField, sortDir, keyword)}
             disabled={keyword.length == 0}
           >
             <i className='fas fa-search  '></i>
@@ -144,7 +145,7 @@ const AllUsers = ({ history }) => {
             type='button'
             class='btn btn-secondary'
             onClick={() => {
-              getUserData(page, sortField, sortDir, '')
+              getCategoriesData(page, sortField, sortDir, '')
               setKeyword('')
             }}
             disabled={keyword.length == 0}
@@ -168,7 +169,7 @@ const AllUsers = ({ history }) => {
               <thead className='thead-dark'>
                 <tr>
                   <th>
-                    User Id
+                    Id
                     <span onClick={() => sortData('id', 1)} className='ml-4'>
                       <a className='fas fa-sort-up'></a>
                     </span>
@@ -178,48 +179,27 @@ const AllUsers = ({ history }) => {
                   </th>
                   <th>Photo</th>
                   <th>
-                    Email
-                    <span onClick={() => sortData('email', 1)} className='ml-4'>
+                    Category Name
+                    {/* <span onClick={() => sortData('name', 1)} className='ml-4'>
                       <a className='fas fa-sort-up'></a>
                     </span>
-                    <span
-                      onClick={() => sortData('email', -1)}
-                      className='ml-2'
-                    >
+                    <span onClick={() => sortData('name', -1)} className='ml-2'>
                       <a className='fas fa-sort-down'></a>
-                    </span>
+                    </span> */}
                   </th>
                   <th>
-                    First Name
-                    <span
-                      onClick={() => sortData('firstName', 1)}
-                      className='ml-4'
-                    >
+                    Alias
+                    <span onClick={() => sortData('alias', 1)} className='ml-4'>
                       <a className='fas fa-sort-up'></a>
                     </span>
                     <span
-                      onClick={() => sortData('firstName', -1)}
+                      onClick={() => sortData('alias', -1)}
                       className='ml-2'
                     >
                       <a className='fas fa-sort-down'></a>
                     </span>
                   </th>
-                  <th>
-                    Last Name
-                    <span
-                      onClick={() => sortData('lastName', 1)}
-                      className='ml-4'
-                    >
-                      <a className='fas fa-sort-up'></a>
-                    </span>
-                    <span
-                      onClick={() => sortData('lastName', -1)}
-                      className='ml-2'
-                    >
-                      <a className='fas fa-sort-down'></a>
-                    </span>
-                  </th>
-                  <th>Roles</th>
+
                   <th>
                     Enabled
                     <span
@@ -239,23 +219,19 @@ const AllUsers = ({ history }) => {
                 </tr>
               </thead>
               <tbody>
-                {users.length > 0 ? (
-                  users.map((user) => (
+                {categories.length > 0 ? (
+                  categories.map((category) => (
                     <tr>
-                      <td>{user.id}</td>
+                      <td>{category.id}</td>
                       <td>
                         <span className='fas fa-portrait fa-2x icon-silver'></span>
                       </td>
-                      <td>{user.email}</td>
-                      <td>{user.firstName}</td>
-                      <td>{user.lastName}</td>
+
+                      <td>{category.name}</td>
+                      <td>{category.alias}</td>
+
                       <td>
-                        {user.roles.map((role) => (
-                          <span>{role.name},&nbsp;</span>
-                        ))}
-                      </td>
-                      <td>
-                        {user.enabled ? (
+                        {category.enabled ? (
                           <a
                             className='fas fa-check-circle fa-2x'
                             style={{ color: '#6495ED' }}
@@ -272,14 +248,16 @@ const AllUsers = ({ history }) => {
                           className='fas fa-edit fa-2x icon-green'
                           style={{ color: 'green' }}
                           onClick={(e) =>
-                            history.push(`/admin/users/edit/${user.id}`)
+                            history.push(
+                              `/admin/categories/edit/${category.id}`
+                            )
                           }
                         ></a>
                         &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                         <a
                           className='fas fa-trash fa-2x '
                           style={{ color: 'gray' }}
-                          onClick={(e) => deleteUsers(user.id)}
+                          onClick={(e) => deleteCategoryById(category.id)}
                         ></a>
                       </td>
                     </tr>
@@ -293,9 +271,9 @@ const AllUsers = ({ history }) => {
             </table>
           </div>
           {/* For mobile view */}
-          <AllUsersMobile
-            users={users}
-            deleteUsers={deleteUsers}
+          <AllCategoriesMobile
+            categories={categories}
+            deleteCategoryById={deleteCategoryById}
             history={history}
           />
           <br />
@@ -303,11 +281,12 @@ const AllUsers = ({ history }) => {
           <div className='row'>
             <nav className='col-md-4 offset-md-4 text-center  p-2'>
               <h6>
-                Showing {startCount} to {endCount} of {usersCount} users
+                Showing {startCount} to {endCount} of {categoriesCount}{' '}
+                categories
               </h6>
               <Pagination
                 defaultCurrent={1}
-                total={(usersCount / 4) * 10}
+                total={(categoriesCount / 8) * 10}
                 onChange={(value) => setPage(value)}
               />
               <br />
@@ -319,4 +298,4 @@ const AllUsers = ({ history }) => {
   )
 }
 
-export default AllUsers
+export default AllCategories
