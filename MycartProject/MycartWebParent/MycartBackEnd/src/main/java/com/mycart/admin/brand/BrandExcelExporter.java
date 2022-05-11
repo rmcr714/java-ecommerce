@@ -1,4 +1,4 @@
-package com.mycart.admin.category;
+package com.mycart.admin.brand;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,16 +15,17 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.mycart.common.entity.Brand;
 import com.mycart.common.entity.Category;
-import com.mycart.common.entity.User;
 
-public class CategoryExcelExporter extends AbstractCategoryExporter{
+
+public class BrandExcelExporter extends AbstractBrandExporter {
 
 	
 	private XSSFWorkbook workbook ;
 	 private XSSFSheet sheet ;
 	
-	 public CategoryExcelExporter() {
+	 public BrandExcelExporter() {
 		 workbook = new XSSFWorkbook();
 		 
 	 }
@@ -42,13 +43,10 @@ public class CategoryExcelExporter extends AbstractCategoryExporter{
 		cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 		
 		
-		
-		createCell(row,0,"Category Id",cellStyle);
-		createCell(row,1,"Category Name",cellStyle);
-		createCell(row,2,"Alias",cellStyle);
-//		createCell(row,3,"Last Name",cellStyle);
-//		createCell(row,4,"Roles",cellStyle);
-//		createCell(row,5,"Enabled",cellStyle);
+		createCell(row,0,"Brand Id",cellStyle);
+		createCell(row,1,"Brand Name",cellStyle);
+		createCell(row,2,"Categories",cellStyle);
+
 	}
 	
 	public void createCell(XSSFRow row,int columnIndex,Object value,XSSFCellStyle style) {
@@ -67,13 +65,13 @@ public class CategoryExcelExporter extends AbstractCategoryExporter{
 	
 	
 	
-	public void export(List<Category> listCategories,HttpServletResponse response) throws IOException {
+	public void export(List<Brand> listBrands,HttpServletResponse response) throws IOException {
 		
 		
 		super.setResponseHeader(response,"application/octet-stream",".xlsx");
 		
 		writeHeaderLine();
-		writeDateLines(listCategories);
+		writeDateLines(listBrands);
 	
 		
 		ServletOutputStream outputStream = response.getOutputStream();
@@ -83,7 +81,7 @@ public class CategoryExcelExporter extends AbstractCategoryExporter{
 	
 		
 	}
-	private void writeDateLines(List<Category> listCategories) {
+	private void writeDateLines(List<Brand> listBrands) {
 		int rowIndex = 1;
 		
 		XSSFCellStyle cellStyle = workbook.createCellStyle();
@@ -91,27 +89,26 @@ public class CategoryExcelExporter extends AbstractCategoryExporter{
 		font.setFontHeight(12);
 		cellStyle.setFont(font);
 		
-		for(Category category :listCategories) {
+		for(Brand brand :listBrands) {
 			XSSFRow row = sheet.createRow(rowIndex++);
 			int columnIndex = 0;
 			
 			
-			createCell(row,columnIndex++,category.getId(),cellStyle);
-			createCell(row,columnIndex++,category.getName(),cellStyle);
-			createCell(row,columnIndex++,category.getAlias(),cellStyle);
+			createCell(row,columnIndex++,brand.getId(),cellStyle);
+			createCell(row,columnIndex++,brand.getName(),cellStyle);
+			
+			//to show all the categories that this brand makes
+			String data = "";
+			for(Category category:brand.getCategories()) {
+				data += category.getName()+", ";
+			}
+			createCell(row,columnIndex++,data,cellStyle);
 //			createCell(row,columnIndex++,user.getLastName(),cellStyle);
 //			createCell(row,columnIndex++,user.getRoles().toString(),cellStyle);
 //			createCell(row,columnIndex++,user.getEnabled(),cellStyle);
 		}
 		
 	}
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	

@@ -6,6 +6,8 @@ import java.util.List;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -32,7 +34,10 @@ public class UserExcelExporter extends AbstractExporter{
 		XSSFFont font = workbook.createFont();
 		font.setBold(true);
 		font.setFontHeight(14);
+		font.setColor(IndexedColors.WHITE.getIndex());
 		cellStyle.setFont(font);
+		cellStyle.setFillForegroundColor(IndexedColors.BLACK.getIndex());
+		cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 		
 		
 		createCell(row,0,"User Id",cellStyle);
