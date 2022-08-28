@@ -18,23 +18,23 @@ const HeaderAdmin = () => {
           </button>
           <div class='collapse navbar-collapse' id='topNavbar'>
             <ul class='navbar-nav'>
-              <li class='nav-item active'>
-                <a class='nav-link' href='/users'>
+              <li class='nav-item '>
+                <a class='nav-link' href='/admin/users'>
                   &nbsp; Users <span class='sr-only'>(current)</span>
                 </a>
               </li>
               <li class='nav-item'>
-                <a class='nav-link' href='/categories'>
+                <a class='nav-link' href='/admin/categories'>
                   &nbsp; Categories
                 </a>
               </li>
               <li class='nav-item'>
-                <a class='nav-link' href='/brands'>
+                <a class='nav-link' href='/admin/brands'>
                   &nbsp; Brands
                 </a>
               </li>
               <li class='nav-item'>
-                <a class='nav-link' href='/products'>
+                <a class='nav-link' href='/admin/products'>
                   &nbsp; Products
                 </a>
               </li>

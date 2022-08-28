@@ -2,6 +2,8 @@ package com.mycart.common.dto;
 
 public class CategoryDTO {
 
+	
+	
 	private String name;
 	private String alias;
 	private String image;
@@ -16,6 +18,11 @@ public class CategoryDTO {
 	}
 	
 	
+	
+	
+
+
+
 	public String getName() {
 		return name;
 	}

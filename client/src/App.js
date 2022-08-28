@@ -14,6 +14,8 @@ import EditCategory from './pages/admin/categories/EditCategory'
 import AllBrands from './pages/admin/brands/AllBrands'
 import CreateBrand from './pages/admin/brands/CreateBrand'
 import EditBrand from './pages/admin/brands/EditBrand'
+import AllProducts from './pages/admin/products/AllProducts'
+import CreateProduct from './pages/admin/products/CreateProduct'
 
 function App() {
   return (
@@ -29,6 +31,9 @@ function App() {
       <Route path='/admin/brands' component={AllBrands} exact />
       <Route path='/admin/brands/create' component={CreateBrand} exact />
       <Route path='/admin/brands/edit/:id' component={EditBrand} exact />
+      <Route path='/admin/products' component={AllProducts} exact />
+      <Route path='/admin/products/create' component={CreateProduct} exact />
+
       <br />
       <br />
       <br />

@@ -137,6 +137,14 @@ public class BrandController {
 		}
 		
 		
+		//get all brands
+		@GetMapping(value = "/listall")
+		public List<Brand> listAll(){
+			return service.listAll();
+			
+		}
+		
+		
 		
 		
 		

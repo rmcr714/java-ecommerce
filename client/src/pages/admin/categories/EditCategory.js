@@ -89,7 +89,7 @@ const EditCategory = ({ history, match }) => {
                 type='text'
                 className='form-control'
                 required
-                minLength='7'
+                minLength='5'
                 maxLength='128'
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -103,7 +103,7 @@ const EditCategory = ({ history, match }) => {
                 type='text'
                 className='form-control'
                 required
-                minLength='7'
+                minLength='5'
                 maxLength='128'
                 value={alias}
                 onChange={(e) => setAlias(e.target.value)}

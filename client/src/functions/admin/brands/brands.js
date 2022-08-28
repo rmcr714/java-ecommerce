@@ -19,6 +19,9 @@ export const getBrandById = async (id) =>
 export const updatebrand = async (brand, id) =>
   await axios.post(`/api/brands/edit/${id}`, brand)
 
+export const getAllBrands = async () =>
+  await axios.get(`/api/brands/listall`, {})
+
 //export excel
 export const exportBrandsToExcel = async () =>
   await axios
